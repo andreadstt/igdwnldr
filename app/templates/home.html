@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUMAS KANTAH KOTA BOGOR SOCIAL MEDIA TOOLS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            padding: 60px 20px;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .header-logo {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin: 0;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #a8a8a8;
+            margin-bottom: 50px;
+            font-size: 15px;
+            font-weight: 400;
+        }
+
+        .category {
+            background: rgba(37, 37, 37, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .category:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .category-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            color: #ffffff;
+            letter-spacing: -0.3px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .tool-card {
+            background: rgba(42, 42, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 20px;
+            text-decoration: none;
+            color: #e0e0e0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.1) 0%, rgba(74, 144, 226, 0) 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tool-card:hover::before {
+            opacity: 1;
+        }
+
+        .tool-card:hover {
+            background: rgba(50, 50, 50, 0.8);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .tool-card.active {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 16px rgba(74, 144, 226, 0.4);
+        }
+
+        .tool-card.active:hover {
+            background: linear-gradient(135deg, #5a9ff2 0%, #4588cd 100%);
+            box-shadow: 0 8px 24px rgba(74, 144, 226, 0.5);
+        }
+
+        .tool-card.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .tool-name {
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-desc {
+            font-size: 13px;
+            color: #a0a0a0;
+            line-height: 1.4;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-card.active .tool-desc {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .coming-soon {
+            font-size: 10px;
+            color: #777;
+            margin-top: 6px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="header-logo">
+            <h1>Humas Kantah Kota Bogor sosmed tools</h1>
+        </div>
+        <p class="subtitle">Internal tools for content management and reduce repetitive tasks</p>
+
+        <!-- Instagram Tools -->
+        <div class="category">
+            <div class="category-title">Instagram</div>
+            <div class="tools-grid">
+                <a href="/ig-reposter" class="tool-card active">
+                    <div class="tool-name">Instant Reposter</div>
+                    <div class="tool-desc">Download & edit cover posts</div>
+                </a>
+                <div class="tool-card disabled">
+                    <div class="tool-name">Instant View Insight</div>
+                    <div class="tool-desc">Fetch insight postingan untuk isi eksistensi lebih cepat</div>
+                    <div class="coming-soon">Coming soon</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Twitter Tools -->
+        <div class="category">
+            <div class="category-title">Twitter</div>
+            <div class="tools-grid">
+                <a href="/twitter/thread-adjuster" class="tool-card active">
+                    <div class="tool-name">Instant Adjust Thread Caption</div>
+                    <div class="tool-desc">Split Caption menjadi Thread dengan max 280 chars</div>
+                </a>
+                <div class="tool-card disabled">
+                    <div class="tool-name">Thread Reader</div>
+                    <div class="tool-desc">Save thread as text/PDF</div>
+                    <div class="coming-soon">Coming soon</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -64,7 +64,7 @@ def get_system_downloads_folder() -> str:
     return os.getcwd()
 
 DOWNLOADS_ROOT = get_system_downloads_folder()
-DOWNLOADER_OUT = os.path.join(DOWNLOADS_ROOT, "igdwnld_downloads")
+DOWNLOADER_OUT = os.path.join(DOWNLOADS_ROOT, "IG DOWNLOADS")
 os.makedirs(SESSION_DIR, exist_ok=True)
 os.makedirs(DOWNLOADER_OUT, exist_ok=True)
 

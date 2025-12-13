@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Thread Adjuster</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .header-logo {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .back-btn {
+            background: rgba(42, 42, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #e0e0e0;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            background: rgba(60, 60, 60, 0.9);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(-2px);
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .column-title {
+            font-size: 14px;
+            color: #a8a8a8;
+            margin-bottom: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card {
+            background: rgba(37, 37, 37, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #f0f0f0;
+            letter-spacing: 0.2px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(42, 42, 42, 0.6);
+            color: #e0e0e0;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 200px;
+            line-height: 1.5;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #1da1f2;
+            background: rgba(42, 42, 42, 0.9);
+            box-shadow: 0 0 0 3px rgba(29, 161, 242, 0.1);
+        }
+
+        .char-counter {
+            font-size: 12px;
+            color: #888;
+            margin-top: 6px;
+            text-align: right;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #2db0ff 0%, #1d9be9 100%);
+            box-shadow: 0 6px 16px rgba(29, 161, 242, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .thread-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .thread-item {
+            background: rgba(42, 42, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 16px;
+            position: relative;
+        }
+
+        .thread-number {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(29, 161, 242, 0.2);
+            color: #1da1f2;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .thread-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #e0e0e0;
+            white-space: pre-wrap;
+            padding-right: 60px;
+        }
+
+        .thread-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .char-count {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .char-count.warning {
+            color: #ff9800;
+        }
+
+        .char-count.danger {
+            color: #f44336;
+        }
+
+        .btn-copy {
+            background: rgba(29, 161, 242, 0.2);
+            color: #1da1f2;
+            border: 1px solid rgba(29, 161, 242, 0.3);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: rgba(29, 161, 242, 0.3);
+            border-color: rgba(29, 161, 242, 0.5);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        .error-box {
+            background: rgba(58, 26, 26, 0.6);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            color: #ef9a9a;
+            backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(42, 42, 42, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .info-box {
+            background: rgba(29, 161, 242, 0.1);
+            border: 1px solid rgba(29, 161, 242, 0.2);
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #64b5f6;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/" class="back-btn">← Back</a>
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="header-logo">
+            <h1>Twitter Thread Adjuster</h1>
+        </div>
+
+        <div class="main-content">
+            <!-- Left Column: Input -->
+            <div class="left-column">
+                <div class="column-title">Input</div>
+                <div class="card">
+                    <div class="info-box">
+                        💡 Paste long text and it will be automatically split into threads with max 280 characters
+                        each
+                    </div>
+
+                    <div class="input-group">
+                        <label>Long Text</label>
+                        <textarea id="input-text"
+                            placeholder="Paste your long text here...&#10;&#10;It will be split into multiple tweets while keeping sentences intact."></textarea>
+                        <div class="char-counter" id="input-counter">0 characters</div>
+                    </div>
+
+                    <button class="btn btn-primary" id="adjust-btn">Split into Threads</button>
+                </div>
+            </div>
+
+            <!-- Right Column: Output -->
+            <div class="right-column">
+                <div class="column-title">Output</div>
+
+                <div class="card" id="output-card">
+                    <div class="empty-state" id="empty-state">
+                        <div class="empty-state-icon">🧵</div>
+                        <div>Your thread will appear here</div>
+                    </div>
+
+                    <div class="hidden" id="error-box" class="error-box"></div>
+
+                    <div class="hidden" id="threads-container">
+                        <div id="thread-list" class="thread-list"></div>
+
+                        <div class="action-buttons">
+                            <button class="btn btn-small btn-primary" id="copy-all-btn">Copy All</button>
+                            <button class="btn btn-small btn-primary" id="reset-btn">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const inputText = document.getElementById('input-text');
+        const inputCounter = document.getElementById('input-counter');
+        const adjustBtn = document.getElementById('adjust-btn');
+        const emptyState = document.getElementById('empty-state');
+        const errorBox = document.getElementById('error-box');
+        const threadsContainer = document.getElementById('threads-container');
+        const threadList = document.getElementById('thread-list');
+        const copyAllBtn = document.getElementById('copy-all-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        let currentThreads = [];
+
+        // Update character counter
+        inputText.addEventListener('input', () => {
+            const count = inputText.value.length;
+            inputCounter.textContent = `${count} characters`;
+        });
+
+        // Adjust thread
+        adjustBtn.addEventListener('click', adjustThread);
+        copyAllBtn.addEventListener('click', copyAllThreads);
+        resetBtn.addEventListener('click', reset);
+
+        async function adjustThread() {
+            const text = inputText.value.trim();
+
+            if (!text) {
+                showToast('Please enter some text');
+                return;
+            }
+
+            adjustBtn.disabled = true;
+            adjustBtn.textContent = 'Processing...';
+
+            try {
+                const response = await fetch('/twitter/api/adjust-thread', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    displayThreads(data.threads);
+                } else {
+                    showError(data.errors ? data.errors.join(', ') : 'Failed to split text');
+                }
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                adjustBtn.disabled = false;
+                adjustBtn.textContent = 'Split into Threads';
+            }
+        }
+
+        function displayThreads(threads) {
+            currentThreads = threads;
+
+            emptyState.classList.add('hidden');
+            errorBox.classList.add('hidden');
+            threadsContainer.classList.remove('hidden');
+
+            threadList.innerHTML = '';
+
+            threads.forEach((thread, index) => {
+                const item = document.createElement('div');
+                item.className = 'thread-item';
+
+                const charCount = thread.length;
+                let charClass = '';
+                if (charCount > 260) charClass = 'danger';
+                else if (charCount > 240) charClass = 'warning';
+
+                item.innerHTML = `
+                    <div class="thread-number">${index + 1}/${threads.length}</div>
+                    <div class="thread-text">${escapeHtml(thread)}</div>
+                    <div class="thread-footer">
+                        <span class="char-count ${charClass}">${charCount}/280 chars</span>
+                        <button class="btn-copy" onclick="copyThread(${index})">Copy</button>
+                    </div>
+                `;
+
+                threadList.appendChild(item);
+            });
+        }
+
+        function copyThread(index) {
+            const thread = currentThreads[index];
+            navigator.clipboard.writeText(thread).then(() => {
+                showToast(`Thread ${index + 1} copied!`);
+            });
+        }
+
+        function copyAllThreads() {
+            const allText = currentThreads.map((t, i) => `${i + 1}/${currentThreads.length}\n${t}`).join('\n\n---\n\n');
+            navigator.clipboard.writeText(allText).then(() => {
+                showToast('All threads copied!');
+            });
+        }
+
+        function reset() {
+            inputText.value = '';
+            inputCounter.textContent = '0 characters';
+            currentThreads = [];
+            emptyState.classList.remove('hidden');
+            threadsContainer.classList.add('hidden');
+            errorBox.classList.add('hidden');
+        }
+
+        function showError(message) {
+            errorBox.textContent = message;
+            errorBox.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            threadsContainer.classList.add('hidden');
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>

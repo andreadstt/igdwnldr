@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}IG Downloader - Downloads{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">
+            <i class="fas fa-folder-open mr-2"></i> Your Downloads
+        </h1>
+        <p class="text-gray-600">Manage your downloaded Instagram content</p>
+    </div>
+
+    {% if folders %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for folder in folders %}
+        <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition p-6">
+            <div class="flex items-start justify-between mb-3">
+                <i class="fas fa-folder text-4xl text-purple-500"></i>
+                <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-semibold">
+                    {{ folder.file_count }} files
+                </span>
+            </div>
+
+            <h3 class="font-semibold text-gray-800 mb-2 truncate" title="{{ folder.name }}">
+                {{ folder.name }}
+            </h3>
+
+            <div class="flex space-x-2 mt-4">
+                <button onclick="openFolder('{{ folder.name }}')"
+                    class="flex-1 px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition text-sm">
+                    <i class="fas fa-folder-open mr-1"></i> Open Folder
+                </button>
+                <button onclick="deleteFolder('{{ folder.name }}')"
+                    class="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition text-sm">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16">
+        <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-2xl font-semibold text-gray-600 mb-2">No downloads yet</h3>
+        <p class="text-gray-500 mb-6">Start downloading Instagram content to see them here</p>
+        <a href="/" class="inline-block px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+            <i class="fas fa-download mr-2"></i> Start Downloading
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openFolder(folderName) {
+        fetch(`/api/open-folder/${folderName}`, {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Opening folder in file manager...', 'success');
+                } else {
+                    showToast(data.error || 'Failed to open folder', 'error');
+                }
+            })
+            .catch(error => {
+                showToast('Error: ' + error.message, 'error');
+            });
+    }
+
+    function deleteFolder(folderName) {
+        if (!confirm(`Are you sure you want to delete "${folderName}"?`)) {
+            return;
+        }
+
+        fetch(`/api/delete-folder/${folderName}`, {
+            method: 'DELETE'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Folder deleted successfully', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.error || 'Failed to delete folder', 'error');
+                }
+            })
+            .catch(error => {
+                showToast('Error: ' + error.message, 'error');
+            });
+    }
+</script>
+{% endblock %}
