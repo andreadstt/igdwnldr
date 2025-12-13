@@ -1,5 +1,5 @@
 .sessions
 .venv
-.README.md
-.STRUCTURE.md
-.__pyache__
+README.md
+STRUCTURE.md
+__pycache__
